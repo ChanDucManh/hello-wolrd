@@ -1,0 +1,92 @@
+#include<iostream>
+using namespace std;
+struct node
+{
+	int data;
+	node* right;
+	node* left;
+};
+int insert(node* &root, int data)
+{
+	int a;
+	if(root == NULL)
+	{
+		root = new node;
+		root->data = data;
+		root->right = root->left = NULL;
+		return 0;
+	}
+	if(root->data == data)
+		return 1;
+	if(data < root->data)
+		a = insert(root->left,data);
+	else
+		a = insert(root->right,data);
+	return a;
+}
+void show(node* root)
+{
+	if(root == NULL)
+		return;
+	cout << root->data;
+	show(root->left);
+	show(root->right);
+}
+node* minValueNode(node* nodeRight)
+{
+	node* current = nodeRight;
+	while(current && current->left != NULL)
+		current = current->left;
+	return current;
+}
+node* deleteNode(node* root, int data)
+{
+	if(root == NULL)
+		return root;
+	if(root -> data > data)
+	{
+		root -> left = deletenode(root->left,data);
+		return root;
+	}
+	else
+		if(root -> data < data)
+		{
+			root -> right = deletenode(root ->right, data);
+			return root;
+		}
+	if(root -> left == NULL)
+	{
+		node* temp = root -> right;
+		delete root;
+		return temp;
+	}
+	else
+	{
+		if(root -> right == NULL)
+		{
+			node* temp = root ->left;
+			delete root;
+			return temp;
+		}
+	}
+	node* temp;
+	temp = minValueNode(root->right);
+	root->data = temp->data;
+	root->right = deleteNode(root->right, temp->data);
+	return root;	
+}
+
+int main()
+{
+	node* root = NULL;
+	for(int i = 0; i < 5; i++)
+	{
+		int a ;
+		cin >> a;
+		insert(root, a);
+	}
+	show(root);
+	deleteNode(root, 2);
+	show(root);
+	return 0;
+}
