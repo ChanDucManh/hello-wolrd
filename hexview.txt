@@ -1,0 +1,52 @@
+#include<iostream>
+#include<ctype.h>
+#include<string>
+#define EndLine 16
+using namespace std;
+
+int main()
+{
+	char fileName[100];
+	cout << "Input name file: ";
+	cin >> fileName;
+	cout << "Wait !!!" << "\n";
+	FILE* p_fileName;
+	p_fileName = fopen(fileName,"rb");
+	fseek(p_fileName,0,SEEK_END);
+	long fileSize = ftell(p_fileName);
+	fseek(p_fileName,0,SEEK_SET);
+	char* file = new char[fileSize];
+	fread(file,fileSize,1,p_fileName);
+	fclose(p_fileName);
+	p_fileName = fopen("hexview.txt","wb");
+	file[fileSize] = '\0'; // end file by '/0'
+	for(int i = 0;i < fileSize ;i++)
+	{
+		if(i != 0 && i % EndLine == 0)
+		{
+			fprintf(p_fileName,"  ");
+			int j = i - EndLine;
+			while(j < i)
+			{
+				if(isprint(file[j]) != 0)
+					fprintf(p_fileName,"%c",file[j]);
+				else
+					fprintf(p_fileName,".");
+				j ++;
+			}
+			fprintf(p_fileName,"\n");
+		}
+		if((int)(unsigned char)file[i] >= 0x10)
+			fprintf(p_fileName,"%x ",(unsigned char)file[i]);
+		else
+			fprintf(p_fileName,"0%x ",(unsigned char)file[i]);
+		}
+	fclose(p_fileName);
+	FILE* sourceFile = fopen("hexview.txt","rb");
+	while(fgets(file,fileSize,sourceFile) != NULL)
+		cout << file;
+	fclose(sourceFile);
+	remove("hexview.txt"); // delete buffer
+	system("pause");
+	return 0;
+}
