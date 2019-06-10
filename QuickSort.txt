@@ -1,0 +1,36 @@
+#include<iostream>
+using namespace std;
+int partition(int arr[], int left, int right)
+{
+	int pivot = right;
+	int store = left;
+	for(int i = left ; i < right ; i ++)
+	{
+		if(arr[i]< arr[pivot])
+		{
+			swap(arr[i], arr[store]);
+			store ++;
+		}
+	}
+	swap(arr[store], arr[pivot]);
+	return store;
+}
+void quicksort(int arr[], int left, int right)
+{
+	if(left < right)
+	{
+		int newpivot = partition(arr,left,right);
+		quicksort(arr, left, newpivot-1);
+		quicksort(arr,newpivot+1, right);
+	}
+}
+int main()
+{
+	int arr[10];
+	for(int i=0; i < 10 ;i ++)
+		cin >> arr[i];
+	quicksort(arr,0,9);
+	for(int i=0; i < 10 ;i ++)
+		cout << arr[i] << " ";
+	return 0;
+}
