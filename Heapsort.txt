@@ -27,7 +27,7 @@ int main()
 	for(int i=0;i<6;i++)
 		cout << array[i];
 	n=6;
-	// sort heap
+	// heap sort
 	for(int i= n-1;i>=0;i--)
 	{
 		swap(array[0],array[i]);
