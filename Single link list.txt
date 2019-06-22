@@ -1,0 +1,108 @@
+#include<iostream>
+using namespace std;
+
+struct node
+{
+    int info;
+    node* next;
+};
+
+struct list
+{
+    node* head = NULL;
+    node* end = NULL;
+};
+void addNode(list &listName, int newInfo)
+{
+    if(listName.head == NULL)
+    {
+        node* newNode = new node;
+        newNode->info = newInfo;
+        newNode->next = NULL;
+        listName.head = listName.end = newNode;
+    }
+    else
+    {
+        node* newNode = new node;
+        newNode->info = newInfo;
+        newNode->next = NULL;
+        listName.end->next = newNode;
+        listName.end = newNode;
+    }
+    return;
+}
+int countNumber(list listName)
+{
+    int count = 0;
+    node* current = listName.head;
+    while(current != NULL)
+    {
+        count = count*10 + current->info;
+        current = current->next;
+    }
+    return count;
+}
+list graftLists(list listName1, list listName2)
+{
+    list newList;
+    node* current1 = listName1.head;
+    node* current2 = listName2.head;
+    while(current1 != NULL || current2 != NULL)
+    {
+        if(current1 == NULL)
+        {
+            addNode(newList,current2->info);
+            current2 = current2->next;
+        }
+        else
+            if(current2 == NULL)
+            {
+                addNode(newList,current1->info);
+                current1 = current1->next;
+            }
+            else
+            {
+                if(current1->info < current2->info)
+                {
+                    addNode(newList,current1->info);
+                    current1 = current1->next;
+                }
+                else
+                {
+                    addNode(newList,current2->info);
+                    current2 = current2->next;
+                }
+            }
+    }
+    return newList;
+}
+void showList(list listName)
+{
+    node* current = listName.head;
+    while(current != NULL)
+    {
+        cout << current->info <<" ";
+        current = current->next;
+    }
+    return;
+}
+int main()
+{
+    list list1;
+    list list2;
+    addNode(list1,2);
+    addNode(list1,3);
+    addNode(list1,5);
+    addNode(list1,7);
+    addNode(list1,8);
+    addNode(list2,1);
+    addNode(list2,2);
+    addNode(list2,4);
+    addNode(list2,6);
+    addNode(list2,9);
+    addNode(list2,10);
+    list list3 = graftLists(list1,list2);
+    showList(list3);
+
+    return 0;
+}
