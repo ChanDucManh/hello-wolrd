@@ -1,0 +1,253 @@
+#include<iostream>
+using namespace std;
+
+struct nodeTree
+{
+	int info;
+	nodeTree* left;
+	nodeTree* right;
+};
+
+struct node
+{
+    int info;
+    node* next;
+};
+struct list
+{
+    node* head = NULL;
+    node* end = NULL;
+};
+// tree
+void addNode(list& listName, int newInfo);
+int max(int a, int b)
+{
+	return(a > b ? a : b);
+}
+void insert(nodeTree* &root, int newinfo)
+{
+	if(root == NULL)
+	{
+		nodeTree* newnodeTree = new nodeTree;
+		newnodeTree->info = newinfo;
+		newnodeTree->left = newnodeTree->right = NULL;
+		root = newnodeTree;
+		return;
+	}
+	if(newinfo > root->info)
+	{
+		insert(root->right, newinfo);
+	}
+	else
+		if(newinfo < root->info)
+			insert(root->left,newinfo);
+	return;
+}
+void showTree(nodeTree* root)
+{
+	if(root == NULL)
+		return;
+	cout << root->info <<" ";
+	showTree(root->left);
+	showTree(root->right);
+	return; 
+}
+int bin_search(nodeTree* root, int item)
+{
+	if(root == NULL)
+		return 0;
+	if(root->info == item)
+		return 1;
+	if(item > root->info)
+		return(bin_search(root->right,item));
+	return(bin_search(root->left,item));
+}
+int height(nodeTree* root)
+{
+	if(root == NULL)
+		return 0;
+	int hRight = 0;
+	int hLeft = 0;
+	if(root->right != NULL)
+		hRight = height(root->right);
+	if(root->left != NULL)
+		hLeft = height(root->left);
+	return(max(hRight,hLeft)+1);
+}
+int numberOfNodes(nodeTree* root)
+{
+	if(root == NULL)
+		return 0;
+	return(numberOfNodes(root->left) + 1 + numberOfNodes(root->right));
+}
+int deleteNode(nodeTree* &root, int item)
+{
+	nodeTree** parent = &root;
+	nodeTree* current = root;
+	while(1)
+	{
+		if(current == NULL)
+			return 0;
+		else
+			if(current->info == item)
+				break;
+			else
+				if(item > current->info)
+				{
+					parent = &current->right;
+					current = current->right;
+				}
+				else
+				{
+					parent = &current->left;
+					current = current->left;
+				}
+	}
+	if(current->right == NULL)
+		*parent = current->left;
+	else
+	{
+		nodeTree* change = current->right;
+		if(change->left == NULL)
+		{
+			change->left = current->left;
+			*parent = change;
+		}
+		else
+		{
+			nodeTree* parentOfchange;
+			while(change->left != NULL)
+			{
+				parentOfchange = change;
+				change = change->left;
+			}
+			parentOfchange->left = change->right;
+			change->right = current->right;
+			change->left = current->left;
+			*parent = change;
+		}
+	}
+	delete current;
+	return 1;
+}
+void creatListEven(nodeTree* root,list &even,list &uneven)
+{
+	if(root == NULL)
+		return;
+	if(root->info % 2 == 0)
+		addNode(even, root->info);
+	else
+		addNode(uneven,root->info);
+	creatListEven(root->left,even,uneven);
+	creatListEven(root->right,even,uneven);
+	return;
+}
+/*void countNodes(nodeTree* root, int& count)
+{
+	if(root == NULL)
+		return;
+	count = count + 1;
+	countNodes(root->left,count);
+	countNodes(root->right,count);
+	return;
+}*/
+void sortList(nodeTree* root,list& listIsSorted)
+{
+	if(root == NULL)
+		return;
+	sortList(root->left,listIsSorted);
+	addNode(listIsSorted,root->info);
+	sortList(root->right,listIsSorted);
+	return;
+}
+// list
+void addNode(list& listName, int newInfo)
+{
+    if(listName.head == NULL)
+    {
+        node* newNode = new node;
+        newNode->info = newInfo;
+        newNode->next = NULL;
+        listName.head = listName.end = newNode;
+    }
+    else
+    {
+        node* newNode = new node;
+        newNode->info = newInfo;
+        newNode->next = NULL;
+        listName.end->next = newNode;
+        listName.end = newNode;
+    }
+    return;
+}
+void creatList(nodeTree* root,list& listName)
+{
+	if(root == NULL)
+		return;
+	if(root->left == NULL && root->right == NULL)
+	{
+		addNode(listName, root->info);
+		return;
+	}
+	creatList(root->left,listName);
+	creatList(root->right,listName);
+	return;
+}
+void showList(list listName)
+{
+	node* current = listName.head;
+	while(current != NULL)
+	{
+		cout << current->info <<" ";
+		current = current->next;
+	}
+	return;
+}
+int nIdenticalNodes(list list1, list list2)
+{
+	int count = 0;
+	for(node* current1 = list1.head; current1 != NULL; current1 = current1->next)
+		for(node* current2 = list2.head; current2 != NULL; current2 = current2->next)
+		{
+			if(current2->info == current1->info)
+			{
+				count++;
+				break;
+			}
+			if(current2->info > current1->info)
+				break;
+		}
+	return count;		
+}
+int main()
+{
+	nodeTree* root = NULL;
+	int newinfo;
+	for(int i = 0; i < 10; i++)
+	{	
+		cin >> newinfo;
+		insert(root,newinfo);
+	}
+	//showTree(root);
+	//list even;
+	//list uneven;
+	//creatListEven(root,even,uneven);
+	//showList(even);
+	//cout <<"\n";
+	//showList(uneven);
+	int count = 0;
+	count = numberOfNodes(root);
+	cout << count;
+	list listIsSorted;
+	sortList(root,listIsSorted);
+	showList(listIsSorted);
+	list list2;
+	addNode(list2,2);
+	addNode(list2,5);
+	addNode(list2,7);
+	addNode(list2,9);
+	addNode(list2,10);
+	addNode(list2,11);
+	cout <<"\n"<< nIdenticalNodes(listIsSorted,list2);
+	return 0;
+}
