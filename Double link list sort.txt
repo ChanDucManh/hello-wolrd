@@ -1,0 +1,169 @@
+#include<iostream>
+using namespace std;
+
+struct node
+{
+	int data;
+	node* next;
+	node* pre;
+};
+struct list
+{
+	node* head = NULL;
+	node* end = NULL;
+};
+void  addNodeHead(int item,list &list)
+{
+	if(list.head == NULL)
+	{
+		node* newNode = new node;
+		newNode->data = item;
+		newNode->next = NULL;
+		newNode->pre = NULL;
+		list.head = list.end = newNode;
+		return;
+	}
+	node* newNode = new node;
+	newNode->data = item;
+	newNode->next = list.head;
+	list.head->pre = newNode;
+	list.head = newNode;
+	return;
+}
+void addNodeEnd(int item,list &list)
+{
+	if(list.head == NULL)
+	{
+		node* newNode = new node;
+		newNode->data = item;
+		newNode->next = NULL;
+		newNode->pre = NULL;
+		list.head = list.end = newNode;
+	}
+	else
+	{
+		node* newNode = new node;
+		newNode->data = item;
+		newNode->next = NULL;
+		list.end->next = newNode;
+		newNode->pre = list.end;
+		list.end = newNode;
+	}
+	return;
+}
+void addNodePos(int item, node* posNext, list &list)
+{
+	if(posNext == list.head)
+	{
+		addNodeHead(item,list);
+		return;
+	}
+	node* current = posNext->pre;
+	node* newNode = new node;
+	newNode->data = item;
+	current->next = newNode;
+	newNode->pre = current;
+	newNode->next = posNext;
+	posNext->pre = newNode;
+	return;
+
+}
+void addNodeSort(int item,list &list)
+{
+	node* current = list.head;
+	while(1)
+	{
+		if(current == NULL)
+		{
+			addNodeEnd(item,list);
+			return;
+		}
+		if(current->data > item)
+		{
+			addNodePos(item,current,list);
+			return;
+		}
+		current = current->next;
+	}
+}
+node* search(int index,list list)
+{
+	node* current = list.head;
+	while(1)
+	{
+		if(current == NULL)
+			return NULL;
+		if(current->data == index)
+			return current;
+		current = current->next;
+	}
+}
+void showList(list listName)
+{
+    node* current = listName.head;
+    while(current != NULL)
+    {
+        cout << current->data <<" ";
+        current = current->next;
+    }
+    return;
+}
+void showListEnd(list listName)
+{
+    node* current = listName.end;
+    while(current != NULL)
+    {
+        cout << current->data <<" ";
+        current = current->pre;
+    }
+    return;
+}
+void swap(int index1, int index2,list &list)
+{
+	node* search1 = search(index1,list);
+	node* search2 = search(index2,list);
+	if(search1 == NULL || search2 == NULL)
+		return;
+	node* pre1 = search1->pre;
+	node* pre2 = search2->pre;
+	if(pre1 == NULL)
+		list.head = search2;
+	else
+		pre1->next = search2;
+	if(pre2 == NULL)
+		list.head = search1;
+	else
+		pre2->next = search1;
+	node* temp = search2->next;
+	search2->next = search1->next;
+	search1->next = temp;
+	node* next1 = search1->next;
+	node* next2 = search2->next;
+	if(next1 == NULL)
+		list.end = search2;
+	else
+		next1->pre = search2;
+	if(next2 == NULL)
+		list.end =search1;
+	else
+		next2->pre = search1;
+	temp = search1->pre;
+	search1->pre = search2->pre;
+	search2->pre = temp;
+}
+int main()
+{
+	list list1;
+	addNodeSort(4,list1);
+	addNodeSort(3,list1);
+	addNodeSort(5,list1);
+	addNodeSort(1,list1);
+	addNodeSort(2,list1);
+	addNodeSort(8,list1);
+	addNodeSort(6,list1);
+	addNodeSort(0,list1);
+	addNodeSort(2,list1);
+	addNodeSort(4,list1);
+	showList(list1);
+	return 0;
+}
