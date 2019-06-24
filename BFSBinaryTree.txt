@@ -67,7 +67,6 @@ void BFSBinaryTree(nodeTree* root,queue &queue1)
 	if(root == NULL)
 		return;
 	queue queue;
-	int count = 0;
 	push(queue,root->key);
 	while(1)
 	{
@@ -83,7 +82,6 @@ void BFSBinaryTree(nodeTree* root,queue &queue1)
 			push(queue,current->left->key);
 		if(current->right != NULL)
 			push(queue,current->right->key);
-		count ++;
 	}
 	return;
 }
