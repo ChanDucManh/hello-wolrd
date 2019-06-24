@@ -1,0 +1,43 @@
+#include<iostream>
+using namespace std;
+struct node
+{
+	int data;
+	node* next;
+};
+struct stack
+{
+	node* head = NULL;
+};
+void push(stack &stack,int item)
+{
+	node* newNode = new node;
+	newNode->data = item;
+	newNode->next = stack.head;
+	stack.head = newNode;
+	return;
+}
+node* pop(stack &stack)
+{
+	if(stack.head == NULL)
+		return NULL;
+	node* pop = stack.head;
+	stack.head = pop->next;
+	pop->next = NULL;
+	return pop;
+}
+int main()
+{
+	stack stack1;
+	node* pop1;
+	push(stack1,1);
+	push(stack1,4);
+	push(stack1,5);
+	push(stack1,3);
+	push(stack1,2);
+	push(stack1,8);
+	push(stack1,9);
+	while((pop1 = pop(stack1)) != NULL)
+    	cout << pop1->data;
+	return 0;
+}
