@@ -18,7 +18,7 @@ struct queue
 };
 void addNodeTree(nodeTree*&root, int item);
 nodeTree* search(nodeTree* root, int item);
-void showLRR(nodeTree* root);
+void DFSshowLRR(nodeTree* root);
 void BFSBinaryTree(nodeTree* root,queue &queue);
 void push(queue &queue, int item);
 nodeList* pop(queue &queue);
@@ -52,14 +52,22 @@ nodeTree* search(nodeTree* root, int item)
 	else
 		return(search(root->left,item));
 }
-void showLRR(nodeTree* root)
+void DFSshowLRoR(nodeTree* root)
 {
 	if(root == NULL)
 		return;
-	showLRR(root->left);
+	DFSshowLRoR(root->left);
 	cout << root->key<<" ";
-	showLRR(root->right);
+	DFSshowLRoR(root->right);
 	return;
+}
+void DFSshowLRRo(nodeTree* root)
+{
+	if(root == NULL)
+		return;
+	DFSshowLRRo(root->left);
+	DFSshowLRRo(root->right);
+	cout << root->key <<" ";
 }
 void BFSBinaryTree(nodeTree* root,queue &queue1)
 {
@@ -67,6 +75,7 @@ void BFSBinaryTree(nodeTree* root,queue &queue1)
 	if(root == NULL)
 		return;
 	queue queue;
+	int count = 0;
 	push(queue,root->key);
 	while(1)
 	{
@@ -82,6 +91,7 @@ void BFSBinaryTree(nodeTree* root,queue &queue1)
 			push(queue,current->left->key);
 		if(current->right != NULL)
 			push(queue,current->right->key);
+		count ++;
 	}
 	return;
 }
@@ -135,8 +145,10 @@ int main()
 	addNodeTree(root,6);
 	addNodeTree(root,9);
 	addNodeTree(root,10);
-	showLRR(root);
+	DFSshowLRoR(root);
 	cout <<"\n";
 	BFSBinaryTree(root,queue);
+	cout << "\n";
+	DFSshowLRRo(root);
 	return 0;
 }
