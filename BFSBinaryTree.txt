@@ -1,0 +1,144 @@
+#include<iostream>
+using namespace std;
+struct nodeTree
+{
+	int key;
+	nodeTree* left;
+	nodeTree* right;
+};
+struct nodeList
+{
+	int data;
+	nodeList* next;
+};
+struct queue
+{
+	nodeList* head = NULL;
+	nodeList*end = NULL;
+};
+void addNodeTree(nodeTree*&root, int item);
+nodeTree* search(nodeTree* root, int item);
+void showLRR(nodeTree* root);
+void BFSBinaryTree(nodeTree* root,queue &queue);
+void push(queue &queue, int item);
+nodeList* pop(queue &queue);
+// tree
+void addNodeTree(nodeTree*&root, int item)
+{
+	if(root == NULL)
+	{
+		nodeTree* newNode = new nodeTree;
+		newNode->key = item;
+		newNode->left = NULL;
+		newNode->right = NULL;
+		root = newNode;
+		return;
+	}
+	if(item > root->key)
+		addNodeTree(root->right,item);
+	else
+		if(item < root->key)
+			addNodeTree(root->left,item);
+	return;
+}
+nodeTree* search(nodeTree* root, int item)
+{
+	if(root == NULL)
+		return NULL;
+	if(root->key == item)
+		return root;
+	if(item > root->key)
+		return(search(root->right,item));
+	else
+		return(search(root->left,item));
+}
+void showLRR(nodeTree* root)
+{
+	if(root == NULL)
+		return;
+	showLRR(root->left);
+	cout << root->key<<" ";
+	showLRR(root->right);
+	return;
+}
+void BFSBinaryTree(nodeTree* root,queue &queue1)
+{
+	nodeList* n_pop;
+	if(root == NULL)
+		return;
+	queue queue;
+	int count = 0;
+	push(queue,root->key);
+	while(1)
+	{
+		n_pop = pop(queue);
+		if(n_pop == NULL)
+			break;
+		cout << n_pop->data << " ";
+
+		nodeTree* current = search(root,n_pop->data);
+		if(current == NULL) 
+			return;
+		if(current->left != NULL)
+			push(queue,current->left->key);
+		if(current->right != NULL)
+			push(queue,current->right->key);
+		count ++;
+	}
+	return;
+}
+// queue
+void push(queue &queue, int item)
+{
+	nodeList* newNode = new nodeList;
+	newNode->data = item;
+	if(queue.head == NULL)
+	{
+		queue.head = queue.end = newNode;
+		newNode->next = NULL;
+		return;
+	}
+	newNode->next = queue.head;
+	queue.head = newNode;
+	return;
+}
+nodeList* pop(queue &queue)
+{
+	if(queue.head == NULL)
+		return NULL;
+	//nodeList* pop = queue.end;
+	nodeList* current = queue.head;
+	nodeList* newEnd = NULL;
+	while(current->next != NULL)
+	{
+		newEnd = current;
+		current = current->next;
+	}
+	nodeList* pop =current;
+	if(newEnd == NULL)
+	{
+		queue.head = queue.end = NULL;
+		return pop;
+	}
+	newEnd->next = NULL;
+	queue.end = newEnd;
+	return pop;
+}
+
+int main()
+{
+	queue queue;
+	nodeTree* root = NULL;
+	addNodeTree(root,5);
+	addNodeTree(root,8);
+	addNodeTree(root,3);
+	addNodeTree(root,4);
+	addNodeTree(root,2);
+	addNodeTree(root,6);
+	addNodeTree(root,9);
+	addNodeTree(root,10);
+	showLRR(root);
+	cout <<"\n";
+	BFSBinaryTree(root,queue);
+	return 0;
+}
