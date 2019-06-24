@@ -1,0 +1,48 @@
+#include<iostream>
+using namespace std;
+struct nodeQuere
+{
+	int info;
+	nodeQuere* next;
+};
+struct quere
+{
+	nodeQuere* head = NULL;
+	nodeQuere* end = NULL;
+};
+void push(quere &quere, int newInfo)
+{
+	if(quere.head == NULL)
+	{
+		nodeQuere* newnodeQuere = new nodeQuere;
+		newnodeQuere->info = newInfo;
+		newnodeQuere->next = NULL;
+		quere.head = quere.end = newnodeQuere;
+	}
+	else
+	{
+		nodeQuere* newnodeQuere = new nodeQuere;
+		newnodeQuere->info = newInfo;
+		newnodeQuere->next = NULL;
+		quere.end->next = newnodeQuere;
+		quere.end = newnodeQuere;
+	}
+}
+nodeQuere* pop(quere &quere)
+{
+	if(quere.head == NULL)
+		return NULL;
+	nodeQuere* pop = quere.head;
+	quere.head = quere.head->next;
+	pop->next = NULL;
+	return pop;
+}
+int main()
+{
+	quere quere1;
+	for(int i = 0; i < 10; i++)
+		push(quere1,i);
+	for(int i = 0; i < 10; i++)
+		cout << pop(quere1)->info;
+	return 0;
+}
