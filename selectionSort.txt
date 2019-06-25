@@ -1,0 +1,30 @@
+#include<iostream>
+using namespace std;
+void swap(int &index1, int &index2)
+{
+	int tmp = index1;
+	index1 = index2;
+	index2 = tmp;
+}
+int main()
+{
+	int arrayexam[10];
+	for(int i = 0;i < 10;i++)
+	{
+		cout << "Input: ";
+		cin >> arrayexam[i];
+	}
+	int min;
+	for(int i = 0;i < 10;i++)
+	{
+		min = i;
+		for(int j = i+1;j < 10;j++)
+			if(arrayexam[j] < arrayexam[min])
+				min = j;
+		swap(arrayexam[i],arrayexam[min]);
+	}
+	for(int i = 0;i < 10;i++)
+	{
+		cout << arrayexam[i] << " ";
+	}
+}
