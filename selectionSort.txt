@@ -27,4 +27,5 @@ int main()
 	{
 		cout << arrayexam[i] << " ";
 	}
+	return 0;
 }
