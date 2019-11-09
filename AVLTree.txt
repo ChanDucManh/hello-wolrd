@@ -1,0 +1,276 @@
+#include<iostream>
+#include<queue>
+#include<math.h>
+#define BALANCE 1
+#define COUNT 10
+using namespace std;
+struct AVLnode
+{
+	int key;
+	int height;
+	AVLnode* right;
+	AVLnode* left;
+};
+int getHeight(AVLnode* current);
+int Max(int a, int b);
+bool search(AVLnode* root,int key);
+AVLnode* newNode(int key);
+void insert(AVLnode* &root, int key);
+bool addNode(AVLnode* &root,int key);
+void rotateWithRightChild(AVLnode* &root);
+void rotateWithLeftChild(AVLnode* &root);
+void twiceRotateWithRightChild(AVLnode* &root);
+void twiceRotateWithLeftChild(AVLnode* &root);
+void balance(AVLnode* &root);
+void print2DUtil(AVLnode *root, int space);
+void showTree(AVLnode* root);
+AVLnode* findSubstitute(AVLnode* node);
+void removeKey(AVLnode* &root, int del);
+void BFSBinaryTree(AVLnode* root,queue<AVLnode> &queue1);
+AVLnode* getNodeByKey(AVLnode* root, int item);
+int getHeight(AVLnode* current)
+{
+	if(current == NULL)
+	    return -1;
+	else
+		return(current->height);
+}
+bool search(AVLnode* root,int key)
+{
+	if(root == NULL)
+		return false;
+	AVLnode* current = root;
+	while(1)
+	{
+		if(current == NULL)
+			return false;
+		if(key == current->key)
+			return true;
+		if(key > current->key)
+			current = current->right;
+		else
+			current = current->left;
+	}
+}
+AVLnode* newNode(int key)
+{
+	AVLnode* newNode = new AVLnode;
+	newNode->height = 0;
+	newNode->right = NULL;
+	newNode->left = NULL;
+	newNode->key = key;
+	return newNode;
+}
+void insert(AVLnode* &root, int key)
+{
+	if(root == NULL)
+	{
+		root = newNode(key);
+		return ;
+	}
+	if(key > root->key)
+		insert(root->right,key);
+	else
+		insert(root->left,key);
+	balance(root);	
+}
+bool addNode(AVLnode* &root,int key)
+{
+	if(search(root,key))
+		return false;
+	else
+		insert(root,key);
+}
+void rotateWithRightChild(AVLnode* &root)
+{
+	AVLnode* newRoot = root->right;
+	root->right = newRoot ->left;
+	newRoot->left = root;
+	root->height = max(getHeight(root->right),getHeight(root->left)) + 1;
+	newRoot->height = max(getHeight(newRoot->right),getHeight(newRoot->left)) + 1;
+	root = newRoot;	
+}
+void rotateWithLeftChild(AVLnode* &root)
+{
+	AVLnode* newRoot = root->left;
+	root->left = newRoot->right;
+	newRoot->right = root;
+	root->height = max(getHeight(root->right),getHeight(root->left)) + 1;
+	newRoot->height = max(getHeight(newRoot->right),getHeight(newRoot->left)) + 1;
+	root = newRoot;
+}
+void twiceRotateWithRightChild(AVLnode* &root)
+{
+	rotateWithLeftChild(root->right);
+	rotateWithRightChild(root);
+}
+void twiceRotateWithLeftChild(AVLnode* &root)
+{
+	rotateWithRightChild(root->left);
+	rotateWithLeftChild(root);
+}
+void balance(AVLnode* &root)
+{
+	if(root == NULL)
+		return;
+	if((getHeight(root->left) - getHeight(root->right)) > BALANCE)
+	{
+		if(getHeight(root->left->right) > getHeight(root->left->left))
+			twiceRotateWithLeftChild(root);
+		else
+			rotateWithLeftChild(root);
+	}
+	else
+	{
+		if(getHeight(root->right) - getHeight(root->left) > BALANCE)
+		{
+			if(getHeight(root->right->left) > getHeight(root->right->right))
+				twiceRotateWithRightChild(root);
+			else
+				rotateWithRightChild(root);
+		}
+	}
+	root->height = max(getHeight(root->right),getHeight(root->left)) + 1;
+}
+
+AVLnode* findSubstitute(AVLnode* node)
+{
+	AVLnode* current = node;
+	while(current->left != NULL)
+		current = current->left;
+	return current;
+}
+void removeKey(AVLnode* &root, int del)
+{
+	if(root == NULL)
+		return;
+	if(del > root->key)
+		removeKey(root->right,del);
+	else
+	{
+		if(del < root->key)
+			removeKey(root->left,del);
+		else
+		{
+			if(root->right == NULL && root->left == NULL)
+			{
+				AVLnode* delNode = root;
+				root = NULL;
+				delete delNode;
+			}
+			else
+			{
+				if(root->right != NULL && root -> left != NULL)
+				{
+					root->key = findSubstitute(root->right)->key;
+					removeKey(root->right,root->key);
+				}
+				else
+				{
+					if(root->right == NULL)
+					{
+						AVLnode* delNode = root;
+						root = root->left;
+						delete delNode;
+					}
+					else
+					{
+						AVLnode* delNode = root;
+						root = root->right;
+						delete delNode;
+					}
+				}			
+			}	
+		}
+	}
+	balance(root);		
+}
+void print2DUtil(AVLnode *root, int space)  
+{  
+    if (root == NULL)  
+        return;  
+	//space += COUNT;  
+    print2DUtil(root->right, space);  
+	cout << "\n";
+    //for (int i = COUNT; i < space; i++)  
+    //    cout<<" ";  
+    cout<<root->key<<"\n";    
+    print2DUtil(root->left, space);  
+}
+void showTree(AVLnode* root)
+{
+	print2DUtil(root, 0) ;
+}
+AVLnode* getNodeByKey(AVLnode* root, int item)
+{
+	if(root == NULL)
+		return NULL;
+	if(root->key == item)
+		return root;
+	if(item > root->key)
+		return(getNodeByKey(root->right,item));
+	else
+		return(getNodeByKey(root->left,item));
+}
+int main()
+{
+	cout << "------AVL Tree------";
+	cout << "\n1. Add element";
+	cout << "\n2. Delete element";
+	cout << "\n3. Show tree";
+	cout << "\n0.Exit\n";
+	AVLnode* root = NULL;
+	int choice;
+	int key;
+	do
+	{
+		cout <<"Choose: ";
+		cin >> choice;
+		switch(choice)
+		{
+			case 1:
+			{
+				cout << "Key: ";
+				cin >> key;
+				addNode(root,key);
+				break;	
+			}	
+			case 2:
+			{
+				if(root == NULL)
+				{
+					cout << "The tree is empty.\n";
+					break;
+				}
+				cout <<"Key will be deleted: ";
+				cin >> key;
+				if(search(root,key))
+				{
+					removeKey(root,key);
+					cout <<"Deleted\n ";
+				}
+				else
+					cout << "The key does not exist\n";
+				break;
+			}
+				
+			case 3:
+			{
+				if(root == NULL)
+				{
+					cout << "The tree is empty.\n";
+					break;
+				}
+				showTree(root);
+				cout <<"\n";
+				break;	
+			}
+			default:
+				break;
+				
+		}
+	}
+	while(choice != 0);
+	
+	return 0;
+}
