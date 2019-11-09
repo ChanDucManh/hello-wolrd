@@ -189,11 +189,11 @@ void print2DUtil(AVLnode *root, int space)
 {  
     if (root == NULL)  
         return;  
-	//space += COUNT;  
+	space += COUNT;  
     print2DUtil(root->right, space);  
 	cout << "\n";
-    //for (int i = COUNT; i < space; i++)  
-    //    cout<<" ";  
+    for (int i = COUNT; i < space; i++)  
+        cout<<" ";  
     cout<<root->key<<"\n";    
     print2DUtil(root->left, space);  
 }
