@@ -1,0 +1,100 @@
+#include<iostream>
+using namespace std;
+void copyArray(int* oldArray,int sizeOld,int *newArray)
+{
+	for(int i = 0; i < sizeOld; i++)
+		newArray[i] = oldArray[i];
+	return;
+}
+void push(int index, int* &stack, int &top, int &sizeOfStack)
+{
+	if(top >= sizeOfStack - 1)
+	{
+		int* newStack = new int[top*2];
+		copyArray(stack,sizeOfStack,newStack);
+		top = top + 1;
+		newStack[top] = index;
+		stack = newStack;
+		sizeOfStack = top*2;
+		return;
+	}
+	top = top + 1;
+	stack[top] = index;
+	return;
+}
+void pop(int* stack,int &top)
+{
+	if(top < 0)
+	{
+		cout <<"\nStack is empty";
+		return;
+	}
+	cout <<stack[top] << " ";
+	top = top - 1;
+	return;
+}
+void showStack(int *stack,int top)
+{
+	if(top == -1)
+	{
+		cout << "\nStack is empty";
+		return;
+	}
+	for(int i = 0; i <= top; i++)
+		cout << stack[top-i] << "\n";
+	return;
+}
+int main()
+{
+	int size = 10;
+	int* stack = new int[size];
+	int top = -1;
+	int choice;
+	bool next = true;
+	cout << "1. Add element";
+	cout << "\n2. Show last element";
+	cout << "\n3.Show stack";
+	cout << "\n0. Exit\n";
+	
+	while(next)
+	{
+		cout << "Choose mode: ";
+		cin >> choice;
+		switch(choice)
+		{
+			case 0:
+			{
+				next = false;
+				cout << "End program";
+				delete[] stack;
+				break;
+			}
+			case 1:
+			{
+				int newValue;
+				cout << "New value: ";
+				cin >> newValue;
+				push(newValue,stack,top,size);
+				break;
+			}
+			case 2:
+			{
+				cout << "Last element: ";
+				pop(stack,top);
+				cout << "\n";	
+				break;
+			}
+			case 3:
+			{
+				cout << "Stack\n";
+				showStack(stack,top);
+				break;
+			}
+			default:
+				break;
+				
+		}
+	}
+	return 0;
+	
+}
