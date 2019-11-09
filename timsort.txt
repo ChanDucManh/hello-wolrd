@@ -1,0 +1,330 @@
+#include<iostream>
+#include<stack>
+#include<utility>
+#include<time.h>
+#include<stdlib.h>
+using namespace std;
+int min(int a,int b);
+
+void insertionSort(int array[],int left, int right);
+void megerSubArrays(int array[],int left,int right);
+
+int getMinrun(int n);
+int getFirstIndex(pair<int,int> element);
+int getSizeSubArray(pair<int,int> element);
+int getSizeOfRun(int* array,int size, int firstIndex,int minrun);
+int min(int a,int b);
+
+pair<int,int> creatPair(int firstIndex,int size);
+void setElement(int *array,int size);
+
+bool checkConditions(int first,int second,int third);
+
+void sortStack(stack<pair<int,int> > s_index_size);
+void sortSubArrays(int *array);
+
+int min(int a,int b)
+{
+	return(a < b ? a:b);
+}
+void insertionSort(int array[],int left, int right)
+{
+	int temp;
+	int j;
+	for(int i = left + 1; i <= right; i++)
+	{
+		temp = array[i];
+		j = i - 1;
+		while(j >= left && array[j] > temp)
+		{
+			array[j+1] = array[j];
+			j--;
+		} 
+		array[j+1] = temp;
+	}
+}
+void megerSubArrays(int *array,pair<int,int> left,pair<int,int> right)
+{
+	int lenLeft = getSizeSubArray(left);
+	int lenRight = getSizeSubArray(right); 
+	int *arrLeft = new int[lenLeft];
+	int *arrRight = new int[lenRight];
+	int firstIndex = getFirstIndex(left);
+	int secondIndex = getFirstIndex(right);
+	for(int i = 0; i < lenLeft; i ++)
+		arrLeft[i] = array[i+firstIndex];
+	for(int i = 0; i < lenRight; i++)
+		arrRight[i] = array[i+secondIndex];
+	int i = 0;
+	int j = 0;
+	int k = firstIndex;
+	while(i < lenLeft && j <lenRight)
+	{
+		if(arrLeft[i] > arrRight[j])
+		{
+			array[k] = arrRight[j];
+			j++;
+		}
+		else
+		{
+			array[k] = arrLeft[i];
+			i++;
+		}
+		k++;
+	}
+	while(i < lenLeft)
+	{
+		array[k] = arrLeft[i];
+		k++;
+		i++;
+	}
+	while(j < lenRight)
+	{
+		array[k] = arrRight[j];
+		k++;
+		j++;
+	}
+}
+int getMinrun(int n)
+{
+	int r = 0;
+	while( n >= 64)
+	{
+		r |= n & 1;
+		n >>= 1;
+	}
+	return n + r;
+}
+int getFirstIndex(pair<int,int> element)
+{
+	return element.first;
+}
+int getSizeSubArray(pair<int,int> element)
+{
+	return element.second;
+}
+void setFirstIndex(pair<int,int> element, int newIndex)
+{
+	element.first = newIndex;
+}
+void setSizeSubArray(pair<int,int> element, int newSize)
+{
+	element.second = newSize;
+}
+bool checkConditions(int first,int second,int third)
+{
+	if(first > second + third && second > third)
+		return true;
+	else
+		return false;
+}
+void sortStack(stack<pair<int,int> > &s_index_size,int array[])
+{
+	pair<int,int> first;
+	pair<int,int> second;
+	pair<int,int> third;
+	int x;
+	bool existX = false;
+	int y;
+	bool existY = false;
+	int z;
+	bool existZ = false;
+	if(!s_index_size.empty())
+	{
+		
+		first = s_index_size.top();
+		s_index_size.pop();
+		x = getSizeSubArray(first);
+		existX = true;
+	}
+	if(!s_index_size.empty())
+	{
+		second = s_index_size.top();
+		s_index_size.pop();
+		y = getSizeSubArray(second);
+		existY = true;
+	}
+	if(!s_index_size.empty())
+	{
+		third = s_index_size.top();
+		s_index_size.pop();
+		z = getSizeSubArray(third);
+		existZ = true;
+	}
+	if(existX & existY & existZ)
+	{
+		if(!checkConditions(x,y,z))
+		{
+			if(x == min(x,z))
+			{
+				megerSubArrays(array,second,first);
+				s_index_size.push(third);
+				int newIndex = getFirstIndex(second);
+				int newSize = x + y;
+				pair<int,int> *newPair = new pair<int,int>;
+				*newPair = creatPair(newIndex,newSize);
+				s_index_size.push(*newPair);
+			}
+			else
+			{
+				megerSubArrays(array,third,second);
+				int newIndex = getFirstIndex(third);
+				int newSize = y + z;
+				pair<int,int> newPair = creatPair(newIndex,newSize);
+				s_index_size.push(newPair);
+				s_index_size.push(first);
+			}
+		}
+		else
+		{
+			s_index_size.push(third);
+			s_index_size.push(second);
+			s_index_size.push(first);
+		}
+	}
+	else
+	{
+		if(existZ)
+			s_index_size.push(third);
+		if(existY)
+			s_index_size.push(second);
+		if(existX)
+			s_index_size.push(first);
+	}
+	return;
+}
+pair<int,int> creatPair(int firstIndex,int size)
+{
+	pair<int,int> newPair;
+	newPair.first = firstIndex;
+	newPair.second = size;
+	return newPair;
+}
+int getSizeOfRun(int* array,int size, int firstIndex,int minrun)
+{
+	int sizeOfRun = 1;
+	int i = firstIndex;
+	if(firstIndex > size - 1)
+		return 0;
+	if(firstIndex == size - 1)
+		return 1;
+	for(i = firstIndex + 1; i < size ; i++)
+	{
+		if(sizeOfRun < minrun | array[i -1] > array[i])
+			sizeOfRun ++;
+		else
+		 	break;
+	}
+	return sizeOfRun;		
+}
+int getNewFirstIndex(int OldFirstIndex,int run)
+{
+	return(OldFirstIndex + run);
+}
+int getLastIndex(int FirstIndex,int run)
+{
+	return(FirstIndex + run - 1);
+}
+void showArray(int* array,int size)
+{
+	for(int i = 0; i < size; i++)
+	{
+		if(i % 100 == 0)
+		   cout << "\n";
+		cout << array[i] << " ";
+	}
+}
+void random(int *array,int size)
+{
+	srand(time(NULL));
+	for(int i = 0; i < size; i++)
+	{
+		array[i] = rand()%1000;
+		if(i % 100 == 0)
+		   cout << "\n";
+		cout << array[i] << " ";
+	}	
+}
+void setElement(int *array,int size)
+{
+	for(int i = 0; i < size; i++)
+	{
+		cout << "Element " << i+1 << " : ";
+		cin >> array[i];
+	}
+}
+void timSort(int *array,int size)
+{
+	stack<pair<int,int> > s_index_size;
+	int sizeOfRun = 0;
+	int minRun = getMinrun(size); 
+//	cout << "\nMin run: " << minRun << "\n";
+	int sumRun = 0;
+	int firstIndex = 0;
+	int lastIndex;
+	srand(time(NULL));	
+	cout << "\n";
+	firstIndex = 0;
+	while(sumRun < size)
+	{
+		firstIndex = getNewFirstIndex(firstIndex,sizeOfRun);
+		sizeOfRun = getSizeOfRun(array,size,firstIndex,minRun);
+		sumRun = sumRun + sizeOfRun;
+		lastIndex = getLastIndex(firstIndex,sizeOfRun);
+		insertionSort(array,firstIndex,lastIndex);
+		//cout << "Size of run: "<<sizeOfRun << "   First index: " << firstIndex << endl;
+		pair<int,int> *indexSize = new pair<int,int>;
+		*indexSize = creatPair(firstIndex,sizeOfRun);
+		s_index_size.push(*indexSize);	
+		sortStack(s_index_size,array);
+	}
+	while(!s_index_size.empty())
+	{
+		pair<int,int> SubArrayLeft;
+		pair<int,int> SubArrayRight;
+		//cout << "\nPair <size-index> ";
+		//cout << getFirstIndex(s_index_size.top()) << "   "<< getSizeSubArray(s_index_size.top()) << endl;
+		SubArrayRight = s_index_size.top();
+		s_index_size.pop();
+		if(s_index_size.empty())
+		{
+			//cout << "empty";
+			break;
+		}	
+		else
+		{
+			//cout << "not ";
+			SubArrayLeft = s_index_size.top();
+			s_index_size.pop();
+			megerSubArrays(array,SubArrayLeft,SubArrayRight);
+			pair<int,int> *newPair = new pair<int,int>;
+			int newFirstIndex = getFirstIndex(SubArrayLeft);
+			int newSize = getSizeSubArray(SubArrayLeft) + getSizeSubArray(SubArrayRight);
+			*newPair = creatPair(newFirstIndex,newSize);
+			s_index_size.push(*newPair);
+		}	
+	}
+	return;
+}
+int main()
+{
+	int size;
+	int choice;
+	cout << "Number of elements: ";
+	cin >> size;
+	int *array = new int[size];
+	cout << "1. Set the random value of the elements \n2. Set the value of the elements\nChoose: ";
+	cin >> choice;
+	if(choice == 1)
+		random(array,size);
+	else
+		if(choice == 2)
+			setElement(array,size);
+		else
+			return 0;
+	timSort(array,size);
+	cout << "\nResult :";
+	showArray(array,size);
+	cout << "\n";	
+	return 0;
+}
