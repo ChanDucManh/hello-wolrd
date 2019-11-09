@@ -1,0 +1,190 @@
+#include<iostream>
+using namespace std;
+struct node
+{
+	int data;
+	node* next;
+	node* pre;
+};
+struct deque
+{
+	node* head = NULL;
+	node* end = NULL;
+};
+void pushFront(int index, deque& myDeka)
+{
+	node* newNode = new node;
+	newNode->data = index;
+	if(myDeka.head == NULL)
+	{
+		myDeka.head = myDeka.end = newNode;
+		newNode->pre = NULL;
+		newNode->next = NULL;	
+	}
+	else
+	{
+		myDeka.head->pre = newNode;
+		newNode->next = myDeka.head;
+		newNode->pre = NULL;
+		myDeka.head = newNode;
+	}	
+	return;
+}
+void pushEnd(int index, deque& myDeka)
+{
+	node* newNode = new node;
+	newNode->data = index;
+	if(myDeka.head == NULL)
+	{
+		myDeka.head = myDeka.end = newNode;
+		newNode->pre = NULL;
+		newNode->next = NULL;	
+	}
+	else
+	{
+		myDeka.end->next = newNode;
+		newNode->pre = myDeka.end;
+		newNode->next = NULL;
+		myDeka.end = newNode;
+	}
+	return;
+}
+void popFront(deque& myDeka)
+{
+	if(myDeka.head == NULL)
+	{
+		cout << "\nDeque is empty";
+		return;		
+	}
+	cout << myDeka.head->data;
+	node* del = myDeka.head;
+	if(del->next == NULL)
+	{
+		myDeka.head = NULL;
+		myDeka.end = NULL;
+	}
+	else
+	{
+		myDeka.head = del->next;
+		myDeka.head->pre = NULL;
+	}
+	
+	delete del;
+	return;
+}
+void popEnd(deque& myDeka)
+{
+	if(myDeka.end == NULL)
+	{
+		cout << "\nDeque is empty";
+		return;
+	}
+	cout << myDeka.end->data;
+	node* del = myDeka.end;
+	if(del->pre == NULL)
+	{
+		myDeka.end = NULL;
+		myDeka.head = NULL;
+	}
+		
+	else
+	{
+		myDeka.end = del->pre;
+		myDeka.end->next = NULL;
+	}
+	delete del;
+	return;
+}
+void deleteDeque(deque& myDeka)
+{
+	node* del;
+	while(myDeka.head != NULL)
+	{
+		del = myDeka.head;
+		myDeka.head = del->next;
+		delete del;
+	}	
+}
+void show(deque myDeka)
+{
+	node* current = myDeka.head;
+	if(current == NULL)
+	{
+		cout << "\nEmpty deque";
+		return;
+	}
+		
+	while(current != NULL)
+	{
+		cout << current->data << "  ";
+		current = current->next;
+	}	
+	return;
+}
+int main()
+{
+	deque myDeka;
+	int choice;
+	bool next = true;
+	cout << "1. Add to the front ";
+	cout << "\n2. Add to the end";
+	cout << "\n3. Pop and show first element";
+	cout << "\n4. Pop and show last element";
+	cout << "\n5.Show queue from the front to the end";
+	cout << "\n0. Exit\n";
+	while(next)
+	{
+		cout << "Choose mode: ";
+		cin >> choice;
+		switch(choice)
+		{
+			case 0:
+			{
+				next = false;
+				cout << "End program";
+				deleteDeque(myDeka);
+				break;
+			}
+			case 1:
+			{
+				int newValue;
+				cout << "New value: ";
+				cin >> newValue;
+				pushFront(newValue,myDeka);
+				break;
+			}
+			case 2:
+			{
+				int newValue;
+				cout << "New value: ";
+				cin >> newValue;
+				pushEnd(newValue,myDeka);
+				break;
+			}
+			case 3:
+			{
+				cout << "First element: ";
+				popFront(myDeka);
+				cout << "\n";
+				break;
+			}
+			case 4:
+			{
+				cout << "Last element: ";
+				popEnd(myDeka);
+				cout << "\n";
+				break;
+			}
+			case 5:
+			{
+				cout << "Queue: ";
+				show(myDeka);
+				cout << "\n";
+				break;
+			}
+			default:
+				break;	
+		}
+	}
+	return 0;
+}
