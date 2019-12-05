@@ -151,7 +151,7 @@ void sortStack(stack<pair<int,int> > &s_index_size,int array[])
 		z = getSizeSubArray(third);
 		existZ = true;
 	}
-	if(existX & existY & existZ)
+	if(existX && existY && existZ)
 	{
 		if(!checkConditions(x,y,z))
 		{
