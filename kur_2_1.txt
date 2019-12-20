@@ -1,0 +1,424 @@
+в kurmain.cpp
+#include"handle.h"
+using namespace std;
+
+int main() 
+{
+	cout << "___Algorithm Kruskal___\n";
+	vector<edge> graf;
+	vector<edge> newGraf;
+	int nVertices = getNumOfVertices();
+	bool success;
+	int check;
+	check = creatGraf(graf,nVertices);
+	showGraf(graf);
+	if(check == -1)
+	{
+		std :: cout << "Error Enter!!!";
+		std :: cout << "\nThe number of vertices entered is greater than"; 
+		std :: cout << " the number of vertices in the graph.\n";
+		return 0;
+	}	
+	quicksort(graf,0,graf.size()-1);
+	success = kruscal(graf,newGraf);
+	if(success)
+	{
+		showGraf(newGraf);
+		cout << "Min spanning: " << getMinskeleton(newGraf) << "\n";
+	}	
+	else
+		cout << "The graph is not connected\n";
+	system("pause");
+	return 0;
+}
+в handle.cpp
+#include"handle.h"
+int partition(std :: vector<edge>& graf, int left, int right)
+{
+	int pivot = right;
+	int store = left;
+	for(int i = left ; i < right ; i ++)
+	{
+		if(graf[i].weight< graf[pivot].weight)
+		{
+			std :: swap(graf[i], graf[store]);
+			store ++;
+		}
+	}
+	std :: swap(graf[store], graf[pivot]);
+	return store;
+}
+void quicksort(std :: vector<edge>& graf, int left, int right)
+{
+	if(left < right)
+	{
+		int newpivot = partition(graf,left,right);
+		quicksort(graf, left, newpivot-1);
+		quicksort(graf,newpivot+1, right);
+	}
+}
+/////////////////
+void showEdge(edge current)
+{
+	std :: cout << current.vertice1 << "  " << current.vertice2;
+	std :: cout  << "  " << current.weight << "\n";
+}
+void showGraf(std :: vector<edge> graf)
+{
+	std :: cout << "Graphic: \n";
+	if(graf.size() == 0)
+		std :: cout << "Empty!!!\n";
+	for(int i = 0;i < graf.size();i++)
+		showEdge(graf[i]);
+}
+bool existLink(char vertice,std :: vector<char> links)
+{
+	if(links.size() == 0)
+		return false;
+	for(int i = 0; i < links.size();i++)
+	{
+		if(vertice == links[i])
+			return true;
+	}
+	return false;
+}
+void addLink(char vertice,std :: vector<char> &links)
+{
+	links.push_back(vertice);
+	return;
+}
+void makeSets(int *sets,int nVertice)
+{
+	for(int i = 0; i < nVertice; i++)
+		sets[i] = i;
+	return;
+}
+int getIndex(char search,std :: vector<char> vertices)
+{
+	for(int i = 0; i < vertices.size(); i++)
+	{
+		if(search == vertices[i])
+			return i;
+	}
+}
+int find(char vertice,std :: vector<char> vertices,int* sets)
+{
+	int index = getIndex(vertice,vertices);
+	return(sets[index]);
+}
+bool checkExitLink(char vertice1, char vertice2,std :: vector<char> vertices, int* sets)
+{
+	int x = getIndex(vertice1,vertices);
+	int y = getIndex(vertice2,vertices);
+	if(sets[x] == sets[y])
+		return 1;
+	else
+		return 0;	
+}
+void unite(char vertice1, char vertice2,std :: vector<char> vertices, int* sets)
+{
+	int x = getIndex(vertice1,vertices);
+	int y = getIndex(vertice2,vertices);
+	//cout << set[x] << set[y];
+	if(sets[x] == sets[y])
+		return;
+	else
+	{
+		int tmp = sets[y];
+		for(int i = 0;i < vertices.size();i++)
+		{
+			if(sets[i] == tmp)
+				sets[i] = sets[x];
+		}
+	}
+	return;
+}
+void getSetVer(std :: vector<edge> graf,std :: vector<char> &vertices)
+{
+	for(int i = 0; i < graf.size();i++)
+	{
+		if(!existLink(graf[i].vertice1,vertices))
+			addLink(graf[i].vertice1,vertices);	
+		if(!existLink(graf[i].vertice2,vertices))
+			addLink(graf[i].vertice2,vertices);
+	}
+	return;
+}
+bool linkGraf(int* sets, int size)
+{
+	int x = sets[0];
+	for(int i = 1;i < size; i ++)
+	{
+		if(sets[i] != x)
+			return false;
+	}
+	return true;
+}
+bool kruscal(std :: vector<edge> graf,std :: vector<edge> &newGraf)
+{
+	bool success = false;
+	std :: vector<char> vertices;
+	getSetVer(graf,vertices);
+	int size = vertices.size();
+	int* sets = new int[size];
+	makeSets(sets,size);
+	for(int i = 0; i < graf.size();i++)
+	{
+		if(!checkExitLink(graf[i].vertice1,graf[i].vertice2,vertices,sets))
+		{
+			unite(graf[i].vertice1,graf[i].vertice2,vertices,sets);
+			newGraf.push_back(graf[i]);
+			if(linkGraf(sets,size))
+			{
+				success = true;
+				break;
+			}		
+		}
+	}
+	delete[] sets;
+	return success;
+}
+bool linkGraph(int vertices,int edges)
+{
+	if(edges >= vertices - 1)
+		return true;
+	else
+		return false;
+}
+int getMinskeleton(std :: vector<edge> graf)
+{
+	int total = 0;
+	for(int i = 0; i < graf.size(); i++)
+	{
+		total = total + graf[i].weight;
+	}
+	return total;
+}
+///////////////
+char getChar()
+{
+	char symbol;
+	int check;
+	check = scanf("%c",&symbol);
+	while(check == 0 || symbol == '\n')
+	{
+		fflush(stdin);
+		std :: cout << "Error !!!\nEnter again: ";
+		check = scanf("%c",&symbol);
+	}
+	fflush(stdin);
+	return symbol;
+}
+int getNumOfVertices()
+{
+	int check;
+	int vertices;
+	std :: cout << "Enter number of vertices [2-50]: ";
+	check = scanf("%d",&vertices);
+	while(check == 0 || vertices <= 1 || vertices > 50)
+	{
+		fflush(stdin);
+		std :: cout << "Error !!!\nEnter again: ";
+		check = scanf("%d",&vertices);
+	}
+	return vertices;
+}
+int getWeight()
+{
+	int check;
+	int weight;
+	check = scanf("%d",&weight);
+	while(check == 0)
+	{
+		fflush(stdin);
+		std :: cout << "Error !!!\nEnter again: ";
+		check = scanf("%d",&weight);
+	}
+	fflush(stdin);
+	return weight;
+}
+edge* creatEdge()
+{
+	edge* newEdge = new edge;
+	char vertice1, vertice2;
+	if(newEdge == NULL)
+	{
+		std :: cout << "Error!!!";
+		return NULL;
+	}
+	std :: cout << "Enter weight of edge " << ": ";
+	newEdge->weight = getWeight();
+	getVertices(vertice1,vertice2);
+	newEdge->vertice1 = vertice1;
+	newEdge->vertice2 = vertice2;
+	return newEdge;
+}
+void getVertices(char &vertice1, char &vertice2)
+{
+	std :: cout << "Enter first vertice: ";
+	vertice1 = getChar();
+	std :: cout << "Enter second vertice: ";
+	vertice2 = getChar();
+	while(vertice1 == vertice2)
+	{
+		std :: cout << "\nError!!! Coincide vertices.\n";
+		std :: cout << "Enter first vertice: ";
+		vertice1 = getChar();
+		std :: cout << "Enter second vertice: ";
+		vertice2 = getChar();
+	}
+}
+int creatGraf(std :: vector<edge> &graf,int vertices)//,int &edges)
+{	
+	int choice;
+	int check;
+	int count;
+	//bool end = false;
+	int end = 0;
+	while(end == 0)
+	{
+		std :: cout << "1.Add edge \n2.Show graph\n0.Execution algorithm\nChoose: ";
+		check = scanf("%d",&choice);
+		while(check == 0 || choice < 0 || choice > 2)
+		{
+			fflush(stdin);
+			std :: cout << "Error !!!\nEnter again: ";
+			check = scanf("%d",&choice);
+		}
+		switch(choice)
+		{
+			case 1:
+			{
+				edge* newEdge = creatEdge();
+				if(existEdge(graf,*newEdge))
+					std :: cout << "Exist Edge !!!\n";
+				else
+				{
+					graf.push_back(*newEdge);
+				}	
+				break;	
+			}
+			case 2:
+			{
+				showGraf(graf);	
+				break;
+			}
+			case 0:
+			{
+				end = checkEnd(vertices,graf);
+				if(end == 0)
+				{
+					std :: cout << "No enough vertices!!!";
+					std :: cout << "\nAdd please!!!\n";
+				}
+				break;	
+			}
+			default:
+				break;		
+		}
+	}
+	return end;	
+}
+bool existVertice(std :: vector<char> subgraf,char vertice)
+{
+	if(subgraf.size() == 0)
+		return false;
+	for(int i = 0;i < subgraf.size(); i++)
+	{
+		if(vertice == subgraf[i])
+			return true;
+	}
+	return false;
+}
+void addVertice(char vertice,std :: vector<char> &subgraf)
+{
+	subgraf.push_back(vertice);
+	return;
+}
+int countVertices(std :: vector<edge> graf)
+{
+	std :: vector<char> count;
+	if(graf.size() == 0)
+		return 0;
+	for(int i = 0; i < graf.size(); i ++)
+	{
+		if(!existVertice(count,graf[i].vertice1))
+			addVertice(graf[i].vertice1,count);	
+		if(!existVertice(count,graf[i].vertice2))
+			addVertice(graf[i].vertice2,count);			
+	}		
+	return count.size();
+}
+bool existVerticeInGraf(std :: vector<edge> graf, char vertice)
+{
+	for(int i = 0; i < graf.size();i++)
+	{
+		if(vertice == graf[i].vertice1 || vertice == graf[i].vertice2)
+			return(true);	
+	}
+	return false;
+}
+bool existEdge(std :: vector<edge> graf, edge newEdge)
+{
+	char first = newEdge.vertice1;
+	char second = newEdge.vertice2;
+	for(int i = 0; i < graf.size();i++)
+	{
+		if(first == graf[i].vertice1 && second == graf[i].vertice2)
+			return true;
+		else
+			if(first == graf[i].vertice2 && second == graf[i].vertice1)
+				return true;
+	}
+		return false;
+}
+int checkEnd(int vertices,std :: vector<edge> graf)
+{
+	int count;
+	count = countVertices(graf);
+	if(count == vertices)
+		return 1;
+	if(count < vertices)
+		return 0;
+	else
+		return -1;
+}
+в handle.h
+#ifndef _HANDLE_H
+#define _HANDLE_H
+//#include"getGraf.h"
+#include<iostream>
+#include<vector>
+struct edge
+{
+	int weight;
+	char vertice1;
+	char vertice2;
+};
+int partition(std :: vector<edge>& graf, int left, int right);
+void quicksort(std :: vector<edge>& graf, int left, int right);
+void showEdge(edge current);
+void showGraf(std :: vector<edge> graf);
+bool existLink(char vertice,std :: vector<char> links);
+void addLink(char vertice,std :: vector<char> &links);
+bool kruscal(std :: vector<edge> graf,std :: vector<edge> &newGraf);
+void makeSets(int *sets,int nVertice);
+int getIndex(char search,std :: vector<char> vertices);
+int find(char vertice,std :: vector<char> vertices,int* sets);
+bool checkExitLink(char vertice1, char vertice2,std :: vector<char> vertices, int* sets);
+void unite(char vertice1, char vertice2,std :: vector<char> vertices, int* sets);
+void getSetVer(std :: vector<edge> graf,std :: vector<char> &vertices);
+bool linkGraf(int* sets, int size);
+int getMinskeleton(std :: vector<edge> graf);
+char getChar();
+int getNumOfVertices();
+int getWeight();
+edge* creatEdge();
+int creatGraf(std :: vector<edge> &graf,int vertices);
+bool existVertice(std :: vector<char> subgraf,char vertice);
+void addVertice(char vertice,std :: vector<char> &subgraf);
+int countVertices(std :: vector<edge> graf);
+bool existEdge(std :: vector<edge> graf, edge newEdge);
+int checkEnd(int vertices,std :: vector<edge> graf);
+void getVertices(char &vertice1, char &vertice2);
+#endif
